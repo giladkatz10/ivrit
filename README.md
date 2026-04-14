@@ -78,6 +78,22 @@ To use a different LLM provider, edit `config.py`:
 LLM_PROVIDER = "gemini"   # options: "gemini" | "claude" | "ollama"
 ```
 
+## Quick Setup (shell alias)
+
+Add this to your `~/.zshrc` for a one-word command:
+
+```bash
+alias ivrit="conda activate ivrit && python /path/to/ivrit/main.py"
+```
+
+Then reload: `source ~/.zshrc`
+
+Now you can run from anywhere:
+
+```bash
+ivrit meeting.m4a
+```
+
 ## Usage
 
 ### Full pipeline (transcribe + summarize)

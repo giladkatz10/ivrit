@@ -55,12 +55,12 @@ def summarize_gemini(transcript: str) -> str:
     prompt = SUMMARY_PROMPT.format(transcript=transcript)
 
     try:
-        print("  Trying gemini-3-flash...")
-        return _call_gemini("gemini-3-flash", prompt)
+        print("  Trying gemini-2.5-flash...")
+        return _call_gemini("gemini-2.5-flash", prompt)
     except urllib.error.HTTPError as e:
         if e.code == 429:
-            print("  Rate limited, falling back to gemini-3.1-flash-lite...")
-            return _call_gemini("gemini-3.1-flash-lite", prompt)
+            print("  Rate limited, falling back to gemini-2.5-flash-lite...")
+            return _call_gemini("gemini-2.5-flash-lite", prompt)
         raise
 
 
