@@ -1,0 +1,10 @@
+.env
+__pycache__/
+*.pyc
+
+# Audio files and outputs
+*.m4a
+*.wav
+*.mp3
+*_transcript.txt
+*_summary.md

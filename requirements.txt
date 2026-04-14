@@ -1,0 +1,6 @@
+transformers
+torch
+librosa
+accelerate
+soundfile
+python-dotenv
