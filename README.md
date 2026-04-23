@@ -60,11 +60,15 @@ conda activate ivrit
 
 # Install dependencies
 pip install -r requirements.txt
+
+# (Optional) Login to HuggingFace to silence download warnings
+huggingface-cli login
+# Get a free token at https://huggingface.co/settings/tokens (Read access is enough)
 ```
 
 ### Configure
 
-Create a `.env` file with your API key:
+Create a `.env` file with your API key (see `.env.example`):
 
 ```
 GEMINI_API_KEY=your-gemini-api-key
@@ -78,21 +82,57 @@ To use a different LLM provider, edit `config.py`:
 LLM_PROVIDER = "gemini"   # options: "gemini" | "claude" | "ollama"
 ```
 
-## Quick Setup (shell alias)
+## Quick Setup
 
-Add this to your `~/.zshrc` for a one-word command:
+### Option 1: Shell alias (terminal)
+
+Add this to your `~/.zshrc` (update the path to where you cloned the repo):
 
 ```bash
-alias ivrit="conda activate ivrit && python /path/to/ivrit/main.py"
+echo 'alias ivrit="conda activate ivrit && python /path/to/ivrit/main.py"' >> ~/.zshrc
+source ~/.zshrc
 ```
-
-Then reload: `source ~/.zshrc`
 
 Now you can run from anywhere:
 
 ```bash
 ivrit meeting.m4a
 ```
+
+### Option 2: macOS right-click Quick Action
+
+1. Open **Automator** (Spotlight → "Automator")
+2. Create a new **Quick Action**
+3. Set **"Workflow receives"** to **files or folders** in **Finder**
+4. Drag **"Run Shell Script"** from the sidebar
+5. Set **"Pass input"** to **as arguments**
+6. Paste this (update paths if needed):
+   ```bash
+   WAS_RUNNING=$(osascript -e 'application "iTerm" is running')
+
+   osascript <<EOF
+   tell application "iTerm"
+       activate
+       if "$WAS_RUNNING" is "false" then
+           tell current session of current window
+               write text "conda activate ivrit && python '/path/to/ivrit/main.py' '$1'"
+           end tell
+       else
+           tell current window to create tab with default profile
+           tell current session of current window
+               write text "conda activate ivrit && python '/path/to/ivrit/main.py' '$1'"
+           end tell
+       end if
+   end tell
+   EOF
+   ```
+   For Terminal.app instead of iTerm, use:
+   ```bash
+   osascript -e "tell application \"Terminal\" to do script \"conda activate ivrit && python '/path/to/ivrit/main.py' '$1'\""
+   ```
+7. **Cmd+S**, name it **"Transcribe & Summarize"**
+
+Now right-click any audio file in Finder → **Quick Actions** → **Transcribe & Summarize**. A terminal window opens showing the progress.
 
 ## Usage
 
@@ -152,6 +192,23 @@ Any format supported by ffmpeg: `.m4a`, `.mp3`, `.wav`, `.ogg`, `.flac`, etc.
 | **Gemini** (default) | API key from [aistudio.google.com](https://aistudio.google.com/apikey) | Free tier (20 req/day for Flash, 500/day for Flash Lite) |
 | **Claude** | API key from [console.anthropic.com](https://console.anthropic.com) | Paid |
 | **Ollama** | `brew install ollama` + `ollama pull llama3` | Free (local) |
+
+## macOS Quick Action (right-click menu)
+
+Install a Finder right-click option to transcribe & summarize any audio file:
+
+```bash
+bash install_quick_action.sh
+```
+
+Then right-click an audio file in Finder → **Quick Actions** → **Transcribe & Summarize**.
+
+## Uninstall
+
+- **Shell alias:** remove the `alias ivrit=...` line from `~/.zshrc`
+- **Quick Action:** `rm -rf ~/Library/Services/Transcribe\ \&\ Summarize.workflow`
+- **Whisper model cache:** `rm -rf ~/.cache/huggingface/hub/models--ivrit-ai--whisper-large-v3`
+- **Conda environment:** `conda remove -n ivrit --all`
 
 ## Credits
 
